@@ -1,79 +1,43 @@
-import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as yup from "yup";
+import React, { useState } from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { cn } from "./lib/utils";
+import { Button } from "./components/ui/button";
+import { Calendar } from "./components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./components/ui/popover";
 
 const App = () => {
-  const initialValues = {
-    email: "",
-    password: "",
-  };
-
-  const validationSchema = yup.object({
-    email: yup
-      .string()
-      .required("Email is required")
-      .email("Invalid Email Format"),
-    password: yup
-      .string()
-      .required("Password is required")
-      .min(8,"must be at least 8 characters long")
-    .matches(
-      /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
-      'Password must contain at least 1 uppercase letter, 1 special character, 1 number, and be at least 8 characters long'
-    ),
-  });
-
-  const handleSubmit = (value) => {
-    console.log(value);
-  };
+  const [date, setDate] = useState();
 
   return (
-    <div className=" w-full h-screen mx-auto flex justify-center items-center">
-      <Formik validationSchema={validationSchema} validateOnChange={false} validateOnBlur={false} initialValues={initialValues} onSubmit={handleSubmit}>
-        {() => (
-          <>
-            <Form className=" flex flex-col w-[40%] space-y-4">
-              <label htmlFor="email" className=" text-xl">
-                Email
-              </label>
-              <Field
-                className=" border-2  rounded py-2 px-5 "
-                type="email"
-                name="email"
-                id="email"
-              />
-              <ErrorMessage
-                className=" text-red-700"
-                name="email"
-                component="div"
-              />
-
-              <label htmlFor="password" className=" text-xl">
-                {" "}
-                Password{" "}
-              </label>
-
-              <Field
-                className=" border-2  rounded py-2 px-5"
-                type="password"
-                name="password"
-                id="password"
-              />
-              <ErrorMessage
-                className=" text-red-700"
-                name="password"
-                component="div"
-              />
-              <button 
-                type="submit"
-                className=" bg-blue-500 text-white rounded py-2 px-5"
-              >
-                Submit
-              </button>
-            </Form>
-          </>
-        )}
-      </Formik>
+    <div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-[280px] justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date ? format(date, "PPP") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
